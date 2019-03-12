@@ -5,33 +5,33 @@
 		import darkimb
 		...
 		...
-	Required libraries: 
-		Numpy
-		Astropy
-		Matplotlib
-		If not: pip install <library>
 	
 	Coefficients taken from 
 		Cox, A. N.: Allen's Astrophysical Quantities, Springer, 2000
+		taken from IDL
 	Author:	Angel Daniel Martínez-Cifuentes
 	Date:	march, 10 2019
 """
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
-import math as m
-#Define parameters
+import os
 
+
+#Define parameters
 wavelenght = 6173.0 # Value in Angstroms
 name = 'example.fits'
-
 
 ll =1.0* wavelenght
 
 data = fits.getdata(name,0)
 head = fits.getheader(name,0)
 
-#Define darkilmb_u
+xcen = head['CRPIX1']
+ycen = head['CRPIX2']
+radius = head['RSUN_OBS']/head['CDELT1'] #In pixels
+size = head['NAXIS1']
+
 
 def darklimb_u(ll):
 	pll = np.array([1.0,ll,ll**2,ll**3,ll**4,ll**5])
@@ -64,37 +64,36 @@ array[NaNs] = 0.0
 ul = darklimb_u(ll)
 vl = darklimb_v(ll)
 
-dist = np.loadtxt('d.dat')
-print(type(dist))
+xarr = np.arange(0,size,1.)
+yarr = np.arange(0,size,1.)
+xx, yy = np.meshgrid(xarr, yarr)#, sparse=True)
+z = np.sqrt((xx-xcen)**2 + (yy-ycen)**2)
+grid = z/radius
+out = np.where(grid>1.0)
+grid[out] = 0.0
+
+#Equation
+limbfilt =  1.0-ul-vl+ul*np.cos(np.arcsin(grid))+vl*np.cos(np.arcsin(grid))**2
+
+imgout=np.array(array/limbfilt)
+
+def writefits():
+	os.system("rm -r limbcorrect.fits")
+	hdu = fits.PrimaryHDU(imgout)
+	hdul = fits.HDUList([hdu])
+	hdul.writeto('limbcorrect.fits')
+
+#writefits()
+
+def figure():
+	plt.figure(figsize=(8,8))
+	plt.imshow(imgout,cmap = 'Greys_r',origin='lower')
+	title = "corrected"
+	plt.title(title)
+	plt.savefig(title+".png")
+	plt.show()
 
 
 
-
-exit()
-limbfilt =  1.0-ul-vl+ul*np.cos(np.arcsin(dist_grid))+vl*np.cos(np.arcsin(dist_grid))**2
-imgout=np.array(newdata/limbfilt)
-
-
-plt.imshow(imgout,cmap = 'Greys_r',origin='lower')
-plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+figure()
 
