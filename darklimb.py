@@ -10,6 +10,9 @@
 		Astropy
 		Matplotlib
 		If not: pip install <library>
+	
+	Coefficients taken from 
+		Cox, A. N.: Allen's Astrophysical Quantities, Springer, 2000
 	Author:	Angel Daniel Martínez-Cifuentes
 	Date:	march, 10 2019
 """
