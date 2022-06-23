@@ -146,8 +146,8 @@ if __name__=='__main__':
 	
 	name = 'hmi.ic_45s.2014.02.04_03_44_15_TAI.continuum.fits'
 	corrected, original = darklimb(name)
-	figure(original,title='original1',save=True)
-	figure(corrected,title='corrected1',save=True)
+	figure(original,title='original',save=True)
+	figure(corrected,title='corrected',save=True)
 	writefits(corrected)
 	exit()
 
