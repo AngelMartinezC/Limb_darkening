@@ -31,6 +31,7 @@ def writefits(image, name='limbcorrect.fits'):
 	Returns:
 		None
 	"""
+	os.system('rm -r '+name)
 	image.save(name)
 	return
 
@@ -103,37 +104,40 @@ def darklimb(name):
 	head = mapa.meta
 
 	# Parameters needed for the function
-	wavelength = head['WAVELNTH'] # Wavelenght
-	xcen = head['CRPIX1'] # X center
-	ycen = head['CRPIX2'] # Y center
-	radius = head['RSUN_OBS']/head['CDELT1'] # Pixels result
-	size = head['NAXIS1'] # X array size
+	wavelength = head['WAVELNTH']                # Wavelenght
+	xcen       = head['CRPIX1']                  # X center
+	ycen       = head['CRPIX2']                  # Y center
+	radius     = head['RSUN_OBS']/head['CDELT1'] # Sun radius in pixels
+	size       = head['NAXIS1']                  # X array size
 
 	ll =1.0*wavelength
 
-	array = np.array(data) # Convert data into numpy arrays
-	NaNs = np.isnan(array) # Look for NANs
-	array[NaNs] = 0.0      # Make zero all NANs
+	array = 1e4*data/np.max(data)   # Convert data into numpy arrays
+	NaNs = np.where(data < -10)
+	array[NaNs] = 0#np.nan      # Make zero all NANs
 
 	# Apply correction
 	ul = darklimb_u(ll)
 	vl = darklimb_v(ll)
 
-	xarr = np.arange(0,size,1.0) # Make X array
-	yarr = np.arange(0,size,1.0) # Make Y array
+	xarr = np.arange(0,size,1) # Make X array
+	yarr = np.arange(0,size,1) # Make Y array
 	xx, yy = np.meshgrid(xarr, yarr) # Make XY array
+
 	# z: Make array so that the zero center is the center XY
 	# Performed in order to make a circle
 	z = np.sqrt((xx-xcen)**2 + (yy-ycen)**2) 
 	# grid: Normalize the circle so that inside radius is the unity
 	grid = z/radius 
 	out = np.where(grid>1.0) # Look for the values greater than unity
-	grid[out] = 0.0 # Make zero all those values (Domain of arcsin)
+	grid[out] = 0 # Make zero all those values (Domain of arcsin)
 
 	limbfilt =  1.0-ul-vl+ul*np.cos(np.arcsin(grid))+vl*np.cos(np.arcsin(grid))**2
 
 	# Final image
-	imgout=np.array(array/limbfilt)
+	imgout = np.array(array/limbfilt,dtype='uint16')
+	#mapa.meta["BZERO"] = 97304
+	imgout *= (int(1e-4*np.max(data)))
 	
 	return Map(imgout,mapa.meta), mapa
 
@@ -142,10 +146,11 @@ if __name__=='__main__':
 	
 	name = 'hmi.ic_45s.2014.02.04_03_44_15_TAI.continuum.fits'
 	corrected, original = darklimb(name)
-	figure(corrected,title='corrected1',save=True)
 	figure(original,title='original1',save=True)
-
+	figure(corrected,title='corrected1',save=True)
 	writefits(corrected)
+	exit()
+
 
 
 
