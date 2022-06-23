@@ -14,17 +14,34 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
+from sunpy.map import Map
 import os
 
 
 
-def writefits(image):
-	os.system("rm -r limbcorrect.fits")
-	hdu = fits.PrimaryHDU(image)
-	hdul = fits.HDUList([hdu])
-	hdul.writeto('limbcorrect.fits')
+def writefits(image, name='limbcorrect.fits'):
+	"""
+	Función para escribir los datos a un archivo FITS. Si existe un 
+	archivo con nombre limbcorrect.fits, lo reescribe con el nuevo.
+	Args:
+    	image (map): mapa en formato de sunpy.map
+	Returns:
+		None
+	"""
+	#os.system("rm -r limbcorrect.fits")
+	#hdu = fits.PrimaryHDU(image)
+	#hdul = fits.HDUList([hdu])
+	#hdul.writeto(name)
+	image.save(name)
+	return
+
+
+	
 
 def figure(image,title="image",save=False):
+	"""
+	Función para 
+	"""
 	plt.figure(figsize=(8,8))
 	plt.title('Image')
 	plt.imshow(image,cmap = 'Greys_r',origin='lower')
