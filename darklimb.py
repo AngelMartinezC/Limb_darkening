@@ -17,6 +17,9 @@ from astropy.io import fits
 from sunpy.map import Map
 import os
 
+# -- Make fonts bigger
+plt.rcParams.update({'font.size': 13})
+
 
 
 def writefits(image, name='limbcorrect.fits'):
@@ -38,21 +41,23 @@ def figure(image, title="image", save=False):
 	"""
 	Función para graficar 
 	"""
-	plt.rcParams.update({'font.size': 13})
 	plt.figure(figsize=(8,8))
+	plt.subplot(projection=image)
+	image.plot()
+	image.draw_grid()
 	plt.title('Image')
-	plt.imshow(image,cmap = 'Greys_r',origin='lower')
-	if save == True:
-		plt.savefig(title+".png")
-	else:
-		pass
+    #plt.imshow(image,cmap = 'Greys_r',origin='lower')
+	#if save == True:
+	#	plt.savefig(title+".png")
+	#else:
+	#	pass
 	plt.show()
 
 
 
 
 
-def darklimb(array):
+def darklimb(name):
 	
 	"""
 	  Darklimb function:
@@ -94,8 +99,11 @@ def darklimb(array):
 	# -------------------------------------------------------------
 	
 	# Read data files
-	data = fits.getdata(name,0)
-	head = fits.getheader(name,0)
+	mapa = Map(name)
+	data = mapa.data
+	head = mapa.meta
+	#data = fits.getdata(name,0)
+	#head = fits.getheader(name,0)
 
 	# Parameters needed for the function
 	wavelength = head['WAVELNTH'] # Wavelenght
@@ -130,16 +138,19 @@ def darklimb(array):
 	# Final image
 	imgout=np.array(array/limbfilt)
 	
-	return imgout, array
+	return Map(imgout,mapa.meta), mapa
 
 
 if __name__=='__main__':
 	
 	name = 'hmi.ic_45s.2014.02.04_03_44_15_TAI.continuum.fits'
 	corrected, original = darklimb(name)
+	figure(corrected,title='corrected1',save=True)
+
+
+	exit()
 
 	#writefits(corrected)
-	figure(corrected,title='corrected1',save=True)
 	figure(original,title='original1',save=True)
 
 
