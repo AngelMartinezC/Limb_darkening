@@ -49,6 +49,9 @@ def figure(image, title="image", save=False):
 	plt.show()
 
 
+
+
+
 def darklimb(array):
 	
 	"""
