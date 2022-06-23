@@ -28,20 +28,17 @@ def writefits(image, name='limbcorrect.fits'):
 	Returns:
 		None
 	"""
-	#os.system("rm -r limbcorrect.fits")
-	#hdu = fits.PrimaryHDU(image)
-	#hdul = fits.HDUList([hdu])
-	#hdul.writeto(name)
 	image.save(name)
 	return
 
 
 	
 
-def figure(image,title="image",save=False):
+def figure(image, title="image", save=False):
 	"""
-	Función para 
+	Función para graficar 
 	"""
+	plt.rcParams.update({'font.size': 13})
 	plt.figure(figsize=(8,8))
 	plt.title('Image')
 	plt.imshow(image,cmap = 'Greys_r',origin='lower')
