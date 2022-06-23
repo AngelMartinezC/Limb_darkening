@@ -39,18 +39,17 @@ def writefits(image, name='limbcorrect.fits'):
 
 def figure(image, title="image", save=False):
 	"""
-	Función para graficar 
+	Función para graficar el mapa
 	"""
 	plt.figure(figsize=(8,8))
 	plt.subplot(projection=image)
 	image.plot()
 	image.draw_grid()
 	plt.title('Image')
-    #plt.imshow(image,cmap = 'Greys_r',origin='lower')
-	#if save == True:
-	#	plt.savefig(title+".png")
-	#else:
-	#	pass
+	if save == True:
+		plt.savefig(title+".png")
+	else:
+		pass
 	plt.show()
 
 
@@ -102,8 +101,6 @@ def darklimb(name):
 	mapa = Map(name)
 	data = mapa.data
 	head = mapa.meta
-	#data = fits.getdata(name,0)
-	#head = fits.getheader(name,0)
 
 	# Parameters needed for the function
 	wavelength = head['WAVELNTH'] # Wavelenght
@@ -146,12 +143,9 @@ if __name__=='__main__':
 	name = 'hmi.ic_45s.2014.02.04_03_44_15_TAI.continuum.fits'
 	corrected, original = darklimb(name)
 	figure(corrected,title='corrected1',save=True)
-
-
-	exit()
-
-	#writefits(corrected)
 	figure(original,title='original1',save=True)
+
+	writefits(corrected)
 
 
 
