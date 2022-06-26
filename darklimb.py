@@ -136,7 +136,7 @@ def darklimb(name):
 
 	# Final image
 	imgout = np.array(array/limbfilt,dtype='uint16')
-	#mapa.meta["BZERO"] = 97304
+	mapa.meta["BZERO"] = 97304
 	imgout *= (int(1e-4*np.max(data)))
 	
 	return Map(imgout,mapa.meta), mapa
